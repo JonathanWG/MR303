@@ -26,7 +26,7 @@ Tools 14.44.35207), Windows SDK 10.0.26100.
 | O quê | Resultado |
 |---|---|
 | `core` + testes (Release, MSVC) | compila, **0 erros** |
-| `ctest` | **91/91 passam** (44 pré-existentes + 47 novos) |
+| `ctest` | **123/123 passam** (91 até 05/09 + 32 dos MFX em 10/09) |
 | `plugin` (JUCE 8.0.4, target Standalone) | compila, 0 erros — depois de 1 correção, abaixo |
 | Avisos | só `C4324` (o `alignas(64)` proposital em `SpscQueue`) e um `C4458` cosmético em `PluginProcessor.cpp:136` |
 
@@ -85,7 +85,7 @@ Canais com a thread de áudio, e só estes:
 - Matemática de swing/quantize
 - Reclamação de memória sem lock: ponteiro cru atômico + hazard pointers
 - Captura de resample, ligada ao painel (RESAMPLE → pad → REC → REC)
-- **91 testes** em 10 arquivos
+- **123 testes** em 11 arquivos
 
 ## Escrito, sem cobertura de regressão
 
@@ -101,7 +101,8 @@ Canais com a thread de áudio, e só estes:
 
 ## Não existe
 
-- 21 dos 26 efeitos (os 5 de acesso direto existem; faltam os MFX)
+- 16 dos 26 efeitos (os 5 de acesso direto + 5 MFX existem e têm teste;
+  faltam Slicer, Voice Transformer, Distortion, Lo-Fi, Compressor e o resto)
 - Sequenciador de patterns — os tipos existem, `processBlock` é no-op honesto
 - MARK / DEL / ST-END / TIME-BPM / REMAIN e os toggles de playback: desenhados
   e com hitbox, mas inertes. Continuam caindo no `else` de
@@ -234,18 +235,37 @@ Detalhe em `docs/LICENSING.md`.
    não há teste de regressão e o painel (`PanelComponent`) não dispara a fonte
    Input. Continua sendo o passo 1 abaixo.
 
-10. **Os 5 MFX escritos em 05/09 compilam, e só isso.** `Reverb`, `TapeEcho`,
-    `Chorus`, `Flanger`, `Phaser` e `dsp::Lfo` foram escritos no fim daquela
-    sessão, estão registrados em `EffectRack` e entraram no build de hoje sem
-    erro. **Zero testes, nunca ouvidos, não documentados em
-    `docs/ARCHITECTURE.md`.** Tratar como `UNVERIFIED` até ganharem casos em
-    `test_effects.cpp` (as propriedades que valem lá: bypass exato em MIX 0,
-    saída finita e limitada com realimentação máxima, silêncio em silêncio).
+10. **Os 5 MFX escritos em 05/09 agora têm testes.** `Reverb`, `TapeEcho`,
+    `Chorus`, `Flanger`, `Phaser` e `dsp::Lfo` ganharam `core/tests/test_mfx.cpp`:
+    32 casos, suíte total **123/123** (era 91). O que está pinado: bypass exato
+    em LEVEL 0 (Reverb, Tape Echo, Chorus); silêncio gera silêncio; saída finita
+    e limitada com tudo no máximo (inclusive a realimentação >1 do Tape Echo,
+    contida pela tanh); RT60 do Reverb crescendo com TIME e TONE escurecendo a
+    cauda; notches e picos do Flanger e do Phaser **nas frequências que a
+    matemática prevê** (comb em 3,25 ms → notch em 153,8 Hz; 4 allpasses em
+    800 Hz → notch em 331,6 Hz, unidade em 800 Hz); DC blocker do Phaser
+    impedindo RES de virar boost de grave; canais L/R divergindo com DEPTH > 0;
+    `EffectRack` instanciando os cinco e fazendo bypass honesto dos MFX não
+    escritos. Continua valendo: **nunca foram ouvidos, nem comparados a
+    hardware.** Os testes dizem que a topologia faz o que o header promete, não
+    que soa como um SP-303.
 
-11. **Plugin não foi recompilado hoje.** O último build verde do target
-    Standalone é o de 26/08. O `PanelComponent` só usa
-    `ResampleRecorder::State`, que manteve os mesmos valores, então deve
-    compilar — mas "deve" não é "compilou".
+    Fato medido escrevendo os testes: o `Oversampler` do Tape Echo (dois FIR de
+    63 taps a 2×) põe **31 amostras de latência dentro do loop**. A 44,1 kHz são
+    0,7 ms e ninguém ouve; a 1 kHz de taxa de teste é metade do tempo de delay.
+    O teste de timing roda a 44,1 kHz e afirma o deslocamento explicitamente.
+
+11. **Plugin recompilado em 10/09/2026.** Target `sp303_plugin_Standalone`,
+    Release, MSVC 19.44, JUCE 8.0.4: **0 erros**, `SP303.exe` novo. Avisos: os
+    mesmos de sempre (`C4324` do `alignas(64)` e o `C4458` cosmético em
+    `PluginProcessor.cpp:136`). Compilou contra o `ResampleRecorder`
+    reconstruído e contra os MFX novos. Não foi aberto nem tocado — "compila"
+    continua não sendo "funciona".
+
+    Armadilha de build nesta máquina: no Git Bash, `-- /m:1` vira um caminho
+    (`m:1`) e o MSBuild falha com `MSB1008`. Use `-- -m:1`. E o build do core
+    **não** rebuilda sozinho quando o configure falha — o `ctest` roda o binário
+    velho e passa. Conferir sempre a data do `sp303_tests.exe`.
 
 ---
 

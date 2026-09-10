@@ -19,6 +19,7 @@ add_executable(sp303_tests
     test_resample_recorder.cpp
     test_effects.cpp
     test_reclamation.cpp
+    test_mfx.cpp
 )
 
 target_link_libraries(sp303_tests

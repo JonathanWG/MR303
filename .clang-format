@@ -1,0 +1,38 @@
+---
+Language: Cpp
+BasedOnStyle: Google
+
+ColumnLimit: 96
+IndentWidth: 4
+AccessModifierOffset: -4
+TabWidth: 4
+UseTab: Never
+
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: WithoutElse
+AllowShortLoopsOnASingleLine: true
+
+BreakBeforeBraces: Attach
+PointerAlignment: Left
+DerivePointerAlignment: false
+
+AlignConsecutiveAssignments: Consecutive
+AlignAfterOpenBracket: Align
+AlignTrailingComments: true
+
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex:    '^<catch2/'
+    Priority: 1
+  - Regex:    '^<juce_'
+    Priority: 3
+  - Regex:    '^<'
+    Priority: 2
+  - Regex:    '^"sp303/'
+    Priority: 4
+  - Regex:    '.*'
+    Priority: 5
+
+SortIncludes: CaseSensitive
+SpaceAfterCStyleCast: false
+Standard: c++20

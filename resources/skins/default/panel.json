@@ -1,0 +1,497 @@
+{
+  "name": "default",
+  "image": "panel.svg",
+  "sourceWidth": 1240,
+  "sourceHeight": 720,
+  "controls": [
+    {
+      "id": "display",
+      "type": "display",
+      "rect": [
+        60,
+        60,
+        220,
+        92
+      ],
+      "label": "3-digit LED"
+    },
+    {
+      "id": "context",
+      "type": "label",
+      "rect": [
+        60,
+        168,
+        460,
+        30
+      ],
+      "label": "context bar"
+    },
+    {
+      "id": "volume",
+      "type": "knob",
+      "param": "volume",
+      "rect": [
+        360,
+        62,
+        88,
+        88
+      ],
+      "label": "VOLUME"
+    },
+    {
+      "id": "ctrl1",
+      "type": "knob",
+      "param": "ctrl1",
+      "rect": [
+        76,
+        246,
+        108,
+        108
+      ],
+      "label": "CTRL 1"
+    },
+    {
+      "id": "ctrl2",
+      "type": "knob",
+      "param": "ctrl2",
+      "rect": [
+        216,
+        246,
+        108,
+        108
+      ],
+      "label": "CTRL 2"
+    },
+    {
+      "id": "ctrl3",
+      "type": "knob",
+      "param": "ctrl3",
+      "rect": [
+        356,
+        246,
+        108,
+        108
+      ],
+      "label": "CTRL 3"
+    },
+    {
+      "id": "quality_standard",
+      "type": "button",
+      "rect": [
+        60,
+        396,
+        90,
+        44
+      ],
+      "label": "STANDARD",
+      "action": "setQuality:0"
+    },
+    {
+      "id": "quality_long",
+      "type": "button",
+      "rect": [
+        158,
+        396,
+        90,
+        44
+      ],
+      "label": "LONG",
+      "action": "setQuality:1"
+    },
+    {
+      "id": "quality_lo-fi",
+      "type": "button",
+      "rect": [
+        256,
+        396,
+        90,
+        44
+      ],
+      "label": "LO-FI",
+      "action": "setQuality:2"
+    },
+    {
+      "id": "quality_stereo",
+      "type": "button",
+      "rect": [
+        354,
+        396,
+        90,
+        44
+      ],
+      "label": "STEREO",
+      "action": "toggleStereo"
+    },
+    {
+      "id": "playback_gate",
+      "type": "toggle",
+      "rect": [
+        60,
+        454,
+        90,
+        44
+      ],
+      "label": "GATE",
+      "action": "toggleGate"
+    },
+    {
+      "id": "playback_loop",
+      "type": "toggle",
+      "rect": [
+        158,
+        454,
+        90,
+        44
+      ],
+      "label": "LOOP",
+      "action": "toggleLoop"
+    },
+    {
+      "id": "playback_reverse",
+      "type": "toggle",
+      "rect": [
+        256,
+        454,
+        90,
+        44
+      ],
+      "label": "REVERSE",
+      "action": "toggleReverse"
+    },
+    {
+      "id": "playback_hold",
+      "type": "toggle",
+      "rect": [
+        354,
+        454,
+        90,
+        44
+      ],
+      "label": "HOLD",
+      "action": "toggleHold"
+    },
+    {
+      "id": "edit_mark",
+      "type": "button",
+      "rect": [
+        60,
+        512,
+        90,
+        44
+      ],
+      "label": "MARK",
+      "action": "mark"
+    },
+    {
+      "id": "edit_st_end",
+      "type": "button",
+      "rect": [
+        158,
+        512,
+        90,
+        44
+      ],
+      "label": "ST/END",
+      "action": "editStartEnd"
+    },
+    {
+      "id": "edit_time_bpm",
+      "type": "button",
+      "rect": [
+        256,
+        512,
+        90,
+        44
+      ],
+      "label": "TIME/BPM",
+      "action": "editTimeBpm"
+    },
+    {
+      "id": "edit_remain",
+      "type": "button",
+      "rect": [
+        354,
+        512,
+        90,
+        44
+      ],
+      "label": "REMAIN",
+      "action": "remain"
+    },
+    {
+      "id": "fx_filter",
+      "type": "button",
+      "rect": [
+        560,
+        60,
+        100,
+        46
+      ],
+      "label": "FILTER+DRIVE",
+      "action": "selectEffect",
+      "value": 1
+    },
+    {
+      "id": "fx_pitch",
+      "type": "button",
+      "rect": [
+        668,
+        60,
+        100,
+        46
+      ],
+      "label": "PITCH",
+      "action": "selectEffect",
+      "value": 2
+    },
+    {
+      "id": "fx_delay",
+      "type": "button",
+      "rect": [
+        776,
+        60,
+        100,
+        46
+      ],
+      "label": "DELAY",
+      "action": "selectEffect",
+      "value": 3
+    },
+    {
+      "id": "fx_vinyl",
+      "type": "button",
+      "rect": [
+        884,
+        60,
+        100,
+        46
+      ],
+      "label": "VINYL SIM",
+      "action": "selectEffect",
+      "value": 4
+    },
+    {
+      "id": "fx_isolator",
+      "type": "button",
+      "rect": [
+        992,
+        60,
+        100,
+        46
+      ],
+      "label": "ISOLATOR",
+      "action": "selectEffect",
+      "value": 5
+    },
+    {
+      "id": "fx_mfx",
+      "type": "button",
+      "rect": [
+        1100,
+        60,
+        100,
+        46
+      ],
+      "label": "MFX",
+      "action": "selectEffect",
+      "value": 6
+    },
+    {
+      "id": "pad1",
+      "type": "pad",
+      "index": 0,
+      "rect": [
+        560,
+        236,
+        140,
+        140
+      ],
+      "label": "1"
+    },
+    {
+      "id": "pad2",
+      "type": "pad",
+      "index": 1,
+      "rect": [
+        716,
+        236,
+        140,
+        140
+      ],
+      "label": "2"
+    },
+    {
+      "id": "pad3",
+      "type": "pad",
+      "index": 2,
+      "rect": [
+        872,
+        236,
+        140,
+        140
+      ],
+      "label": "3"
+    },
+    {
+      "id": "pad4",
+      "type": "pad",
+      "index": 3,
+      "rect": [
+        1028,
+        236,
+        140,
+        140
+      ],
+      "label": "4"
+    },
+    {
+      "id": "pad5",
+      "type": "pad",
+      "index": 4,
+      "rect": [
+        560,
+        392,
+        140,
+        140
+      ],
+      "label": "5"
+    },
+    {
+      "id": "pad6",
+      "type": "pad",
+      "index": 5,
+      "rect": [
+        716,
+        392,
+        140,
+        140
+      ],
+      "label": "6"
+    },
+    {
+      "id": "pad7",
+      "type": "pad",
+      "index": 6,
+      "rect": [
+        872,
+        392,
+        140,
+        140
+      ],
+      "label": "7"
+    },
+    {
+      "id": "pad8",
+      "type": "pad",
+      "index": 7,
+      "rect": [
+        1028,
+        392,
+        140,
+        140
+      ],
+      "label": "8"
+    },
+    {
+      "id": "bank_a",
+      "type": "button",
+      "rect": [
+        560,
+        556,
+        68,
+        46
+      ],
+      "label": "A",
+      "action": "selectBank",
+      "value": 0
+    },
+    {
+      "id": "bank_b",
+      "type": "button",
+      "rect": [
+        636,
+        556,
+        68,
+        46
+      ],
+      "label": "B",
+      "action": "selectBank",
+      "value": 1
+    },
+    {
+      "id": "bank_c",
+      "type": "button",
+      "rect": [
+        712,
+        556,
+        68,
+        46
+      ],
+      "label": "C",
+      "action": "selectBank",
+      "value": 2
+    },
+    {
+      "id": "bank_d",
+      "type": "button",
+      "rect": [
+        788,
+        556,
+        68,
+        46
+      ],
+      "label": "D",
+      "action": "selectBank",
+      "value": 3
+    },
+    {
+      "id": "act_rec",
+      "type": "button",
+      "rect": [
+        880,
+        556,
+        76,
+        46
+      ],
+      "label": "REC",
+      "action": "rec"
+    },
+    {
+      "id": "act_resample",
+      "type": "button",
+      "rect": [
+        964,
+        556,
+        76,
+        46
+      ],
+      "label": "RESAMPLE",
+      "action": "resample"
+    },
+    {
+      "id": "act_cancel",
+      "type": "button",
+      "rect": [
+        1048,
+        556,
+        76,
+        46
+      ],
+      "label": "CANCEL",
+      "action": "cancel"
+    },
+    {
+      "id": "act_delete",
+      "type": "button",
+      "rect": [
+        1132,
+        556,
+        76,
+        46
+      ],
+      "label": "DEL",
+      "action": "delete"
+    }
+  ],
+  "_comment": "Rects are pixels in the source image; the plugin normalises them by sourceWidth/sourceHeight. Generated by tools/skin/build_skin.py - edit LAYOUT there, not this file."
+}

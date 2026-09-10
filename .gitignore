@@ -1,0 +1,52 @@
+# Build
+build/
+build-*/
+cmake-build-*/
+out/
+_deps/
+
+# IDE
+.vs/
+.vscode/
+.idea/
+*.user
+CMakeUserPresets.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+
+# ---------------------------------------------------------------------------
+# Phase 0 captures
+#
+# Raw hardware captures are large and stay out of git. The ALIGNED REFERENCE
+# SET under captures/reference/ is the exception - it is the null-test's
+# ground truth and must be versioned. Use Git LFS for it.
+# ---------------------------------------------------------------------------
+captures/
+!captures/reference/
+!captures/reference/**
+
+# Rendered output for comparison - regenerated, never committed
+captures/rendered/
+nulltest-results.json
+
+# Build artefacts
+*.vst3
+*.component
+*.aaxplugin
+*.dll
+*.dylib
+*.so
+
+# Signing material - never commit
+*.p12
+*.cer
+*.provisionprofile

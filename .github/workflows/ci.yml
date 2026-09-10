@@ -1,0 +1,179 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Core library + unit tests. Fast, no JUCE, runs on every push.
+  # ---------------------------------------------------------------------------
+  core:
+    name: core (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure
+        run: cmake -B build -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} -DSP303_BUILD_TESTS=ON -DSP303_WERROR=ON
+
+      - name: Build
+        run: cmake --build build --config ${{ env.BUILD_TYPE }} --parallel
+
+      - name: Test
+        working-directory: build
+        run: ctest -C ${{ env.BUILD_TYPE }} --output-on-failure
+
+  # ---------------------------------------------------------------------------
+  # Skin validation.
+  #
+  # A hitbox that overlaps its neighbour or falls off the canvas looks like a
+  # plugin bug and is actually a data bug. Catching it here turns a confusing
+  # runtime symptom into a build failure.
+  # ---------------------------------------------------------------------------
+  skins:
+    name: skin geometry
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Regenerate the default skin
+        run: python tools/skin/build_skin.py
+
+      - name: Fail if the committed skin is stale
+        run: git diff --exit-code resources/skins/default
+
+      - name: Validate every skin
+        run: |
+          for skin in resources/skins/*/; do
+            python tools/skin/validate_skin.py "$skin"
+          done
+
+  # ---------------------------------------------------------------------------
+  # Real-time safety.
+  #
+  # RealtimeSanitizer turns "must not allocate on the audio thread" from a code
+  # review convention into an enforced runtime contract. A violation here is a
+  # dropout in production, so it fails the build.
+  # ---------------------------------------------------------------------------
+  rt-safety:
+    name: real-time safety
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install clang
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-20 || sudo apt-get install -y clang
+
+      - name: Configure with RealtimeSanitizer
+        run: |
+          cmake -B build-rt \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_CXX_COMPILER=clang++ \
+            -DSP303_RT_SANITIZE=ON \
+            -DSP303_BUILD_TESTS=ON
+
+      - name: Build
+        run: cmake --build build-rt --parallel
+
+      - name: Test
+        working-directory: build-rt
+        run: ctest --output-on-failure
+
+  # ---------------------------------------------------------------------------
+  # Plugin build + pluginval.
+  #
+  # pluginval catches host-compatibility bugs that unit tests never will:
+  # illegal calls during prepareToPlay, state round-trip failures, editor
+  # lifetime problems.
+  # ---------------------------------------------------------------------------
+  plugin:
+    name: plugin (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Linux deps
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libasound2-dev libx11-dev libfreetype6-dev
+
+      - name: Configure
+        run: cmake -B build -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} -DSP303_BUILD_PLUGIN=ON
+
+      - name: Build
+        run: cmake --build build --config ${{ env.BUILD_TYPE }} --parallel
+
+      # TODO(phase-6): download pluginval and run at strictness level 10,
+      # then code-sign and notarise. Both need repository secrets that do not
+      # exist yet - see docs/RELEASE.md.
+
+      - name: Upload artefacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: sp303-${{ matrix.os }}
+          path: |
+            build/**/*.vst3
+            build/**/*.component
+          if-no-files-found: warn
+
+  # ---------------------------------------------------------------------------
+  # Null-test against the Phase 0 hardware captures.
+  #
+  # THIS IS THE QUALITY GATE THAT MATTERS. It is the difference between an
+  # emulation and a lo-fi effect that happens to have 8 pads.
+  #
+  # Currently skipped: the reference dataset does not exist until Phase 0 runs.
+  # ---------------------------------------------------------------------------
+  null-test:
+    name: null-test vs hardware
+    runs-on: ubuntu-latest
+    if: false  # enable once captures/reference/ is populated
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install tooling
+        run: |
+          sudo apt-get update && sudo apt-get install -y libsndfile1
+          pip install -r tools/requirements.txt
+
+      - name: Compare
+        run: |
+          python tools/nulltest/nulltest.py \
+            --reference-dir captures/reference \
+            --test-dir      captures/rendered \
+            --threshold-db  -40 \
+            --json          nulltest-results.json
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nulltest-results
+          path: nulltest-results.json
